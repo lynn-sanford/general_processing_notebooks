@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# transcript_cluster_ends_v1.0.py
+# transcript_cluster_ends.py
 # This script takes in refseq annotation bedfile of genes and adds 
 # transcripts more than 100 bases different at 3' or 5' ends to 
 # new GTF file
 
 # Import libraries
 
+import csv
 import math
 import numpy as np
 import pandas as pd
 
 # Define refseq input, output basename
 
-infile = "/Users/lysa8537/data/annotation/hg38_copy/hg38_refseq_genenames_included.bed"
+infile = "/Users/lysa8537/data/annotation/hg38/hg38_refseq_genenames_included.bed"
 basename = "hg38_refseq"
 
 # Dump input file into variable
@@ -66,6 +67,10 @@ for i in range(50):
         unique_tx = unique_tx.drop_duplicates(subset=["chr", "temp_start_round", "stop_round", "strand", "geneID"])
         unique_tx = unique_tx.drop_duplicates(subset=["chr", "temp_start_round", "temp_stop_round", "strand", "geneID"])
 
+# Convert bed to GTF coordinates
+
+unique_tx["start"] = (unique_tx["start"].astype(int) + 1)
+
 # Make columns for writing GTF
 
 unique_tx["ident"] = "hg38_refseq"
@@ -105,4 +110,5 @@ unique_tx.to_csv(
     columns=outcols,
     header=False,
     index=False,
+    quoting=csv.QUOTE_NONE
 )
